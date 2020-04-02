@@ -3,14 +3,13 @@
 import json
 import logging
 import os
-import sys
-
-import pytest
 import requests
 from requests.auth import HTTPBasicAuth
 
-from pact_python_demo.client import UserClient
+import pytest
 from pact import Consumer, Like, Provider, Term
+
+from ..consumer import UserConsumer
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -28,16 +27,19 @@ PACT_MOCK_HOST = 'localhost'
 PACT_MOCK_PORT = 1234
 PACT_DIR = os.path.dirname(os.path.realpath(__file__))
 
+
 @pytest.fixture
 def client():
-    return UserClient(
+    return UserConsumer(
         'http://{host}:{port}'
         .format(host=PACT_MOCK_HOST, port=PACT_MOCK_PORT)
     )
 
 
 def push_to_broker(version):
-    """TODO: see if we can dynamically learn the pact file name, version, etc."""
+    """
+    Push to broker
+    """
     with open(os.path.join(PACT_DIR, PACT_FILE), 'rb') as pact_file:
         pact_file_json = json.load(pact_file)
 
