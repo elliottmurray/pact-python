@@ -36,14 +36,16 @@ def consumer():
     )
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture()
 def pact(request):
     pact = Consumer('UserServiceClient').has_pact_with(
         Provider('UserService'), host_name=PACT_MOCK_HOST, port=PACT_MOCK_PORT,
         pact_dir=PACT_DIR)
-    pact.start_service()
-    yield pact
-    pact.stop_service()
+    try:
+        pact.start_service()
+        yield pact
+    finally:
+        pact.stop_service()
 
     # version = request.config.getoption('--publish-pact')
     # if not request.node.testsfailed and version:
@@ -91,9 +93,13 @@ def test_get_user_non_admin(pact, consumer):
      .with_request('get', '/users/UserA')
      .will_respond_with(200, body=Like(expected)))
 
+    pact.setup()
+
     with pact:
         user = consumer.get_user('UserA')
         assert user.name == 'UserA'
+
+    pact.verify()
 
 
 def test_get_non_existing_user(pact, consumer):
@@ -106,6 +112,4 @@ def test_get_non_existing_user(pact, consumer):
     with pact:
         user = consumer.get_user('UserA')
         assert user is None
-
-
-
+    pact.verify()
