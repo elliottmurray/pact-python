@@ -11,6 +11,7 @@ class UserConsumer(object):
         response = requests.get(uri)
         if response.status_code == 404:
             return None
+
         name = response.json()['name']
         return User(name)
 

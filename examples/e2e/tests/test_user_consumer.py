@@ -28,7 +28,7 @@ PACT_MOCK_PORT = 1234
 PACT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
-# @pytest.fixture
+@pytest.fixture
 def consumer():
     return UserConsumer(
         'http://{host}:{port}'
@@ -71,7 +71,7 @@ def push_to_broker(version):
         r.raise_for_status()
 
 
-def test_get_user_non_admin(pact):
+def test_get_user_non_admin(pact, consumer):
     expected = {
         'name': 'UserA',
         'id': Term(
@@ -92,7 +92,7 @@ def test_get_user_non_admin(pact):
      .will_respond_with(200, body=Like(expected)))
 
     with pact:
-        user = consumer().get_user('UserA')
+        user = consumer.get_user('UserA')
         assert user.name == 'UserA'
 
 
@@ -104,6 +104,8 @@ def test_get_non_existing_user(pact, consumer):
      .will_respond_with(404))
 
     with pact:
-        result = client.get_user('UserA')
+        user = consumer.get_user('UserA')
+        assert user is None
 
-    assert result is None
+
+
