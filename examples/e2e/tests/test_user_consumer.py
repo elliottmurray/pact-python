@@ -9,7 +9,7 @@ from requests.auth import HTTPBasicAuth
 import pytest
 from pact import Consumer, Like, Provider, Term
 
-from ..consumer import UserConsumer
+from ..consumer import UserConsumer, User
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -28,12 +28,26 @@ PACT_MOCK_PORT = 1234
 PACT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
-@pytest.fixture
-def client():
+# @pytest.fixture
+def consumer():
     return UserConsumer(
         'http://{host}:{port}'
         .format(host=PACT_MOCK_HOST, port=PACT_MOCK_PORT)
     )
+
+
+@pytest.fixture(scope='session')
+def pact(request):
+    pact = Consumer('UserServiceClient').has_pact_with(
+        Provider('UserService'), host_name=PACT_MOCK_HOST, port=PACT_MOCK_PORT,
+        pact_dir=PACT_DIR)
+    pact.start_service()
+    yield pact
+    pact.stop_service()
+
+    # version = request.config.getoption('--publish-pact')
+    # if not request.node.testsfailed and version:
+    #     push_to_broker(version)
 
 
 def push_to_broker(version):
@@ -57,21 +71,7 @@ def push_to_broker(version):
         r.raise_for_status()
 
 
-@pytest.fixture(scope='session')
-def pact(request):
-    pact = Consumer('UserServiceClient').has_pact_with(
-        Provider('UserService'), host_name=PACT_MOCK_HOST, port=PACT_MOCK_PORT,
-        pact_dir=PACT_DIR)
-    pact.start_service()
-    yield pact
-    pact.stop_service()
-
-    version = request.config.getoption('--publish-pact')
-    if not request.node.testsfailed and version:
-        push_to_broker(version)
-
-
-def test_get_user_non_admin(pact, client):
+def test_get_user_non_admin(pact):
     expected = {
         'name': 'UserA',
         'id': Term(
@@ -92,13 +92,11 @@ def test_get_user_non_admin(pact, client):
      .will_respond_with(200, body=Like(expected)))
 
     with pact:
-        result = client.get_user('UserA')
-
-    # assert something with the result, for ex, did I process 'result' properly?
-    # or was I able to deserialize correctly? etc.
+        user = consumer().get_user('UserA')
+        assert user.name == 'UserA'
 
 
-def test_get_non_existing_user(pact, client):
+def test_get_non_existing_user(pact, consumer):
     (pact
      .given('UserA does not exist')
      .upon_receiving('a request for UserA')

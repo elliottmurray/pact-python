@@ -1,4 +1,3 @@
-#!/usr/env/bin python
 import datetime
 import json
 import uuid

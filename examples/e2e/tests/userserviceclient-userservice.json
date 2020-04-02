@@ -37,19 +37,6 @@
           }
         }
       }
-    },
-    {
-      "description": "a request for UserA",
-      "providerState": "UserA does not exist",
-      "request": {
-        "method": "get",
-        "path": "/users/UserA"
-      },
-      "response": {
-        "status": 404,
-        "headers": {
-        }
-      }
     }
   ],
   "metadata": {
