@@ -1,15 +1,34 @@
-# Title
+# Introduction
 
-This was taken from https://github.com/bsquizz/pact-python-demo/blob/master/pact_python_demo/user-app.py
-and modified.
+This is an e2e example using flask to help as a guide to getting started with Pact for Python
 
 ## Setup
 
-Run
+Create your own virtualenv for this. Run
+
 ```bash
 pip install -r requirements.txt
 ```
 
+## Consumer
+
+From the root directory run:
+
+```bash
+pytest
+```
+
+Or you can run individual tests like:
+
+```bash
+pytest tests/test_user_consumer.py::test_get_non_existing_user
+```
+
+Sometimes you may get the mock server in a hung state. You can kill it via (untested):
+
+```bash
+pkill -f pact-mock-service.rb
+```
 
 ## Provider States
 
