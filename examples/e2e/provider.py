@@ -23,17 +23,21 @@ def setup_no_user_a():
 
 
 def setup_user_a_nonadmin():
+    broken_id = '1234567'
+    working_id = '00000000-0000-4000-a000-000000000000'
+    broken_date = datetime.datetime.now()
+    working_date = '2016-12-15T20:16:01'
+
     fakedb['UserA'] = {
                         'name': "UserA",
-                        'id': '1234567',
-                        'created_on': datetime.datetime.now(),
+                        'id': broken_id,
+                        'created_on': broken_date,
                         'admin': False
                       }
 
 
 @app.route('/users/<name>')
 def get_user_by_name(name):
-    print("dfsdghsgi")
     user_data = fakedb.get(name)
     if not user_data:
         abort(404)
