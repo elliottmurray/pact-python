@@ -45,7 +45,8 @@ Then run the script (placeholder version number for pact broker)
 ```
 
 You should see this fails with output like this:
-[[/images/error_output.png|error image]]
+
+![error image](images/error_output.png)
 
 To resolve this if you look in the provider.py you will see the working values.
 
