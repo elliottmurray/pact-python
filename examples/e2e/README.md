@@ -35,6 +35,14 @@ Or you can run individual tests like:
 pytest tests/test_user_consumer.py::test_get_non_existing_user
 ```
 
+If you want to publish this to the pact broker add the '--publish-pact' option like:
+
+```bash
+pytest  --publish-pact=XX
+```
+
+XX is the version number of the pact and is for you to manage in your deployment process.
+
 Sometimes you may get the mock server in a hung state. You can kill it via (untested):
 
 ```bash
