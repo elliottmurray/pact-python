@@ -32,6 +32,36 @@ pkill -f pact-mock-service.rb
 
 ## Provider States
 
+Start the provider app in one window:
+
+```bash
+python provider.py
+```
+
+Then run the script (placeholder version number for pact broker)
+
+```bash
+./verify_pact.sh 1
+```
+
+You should see this fails with output like this:
+[[/images/error_output.png|error image]]
+
+To resolve this if you look in the provider.py you will see the working values.
+
+```python
+def setup_user_a_nonadmin():
+    broken_id = '1234567'
+    working_id = '00000000-0000-4000-a000-000000000000'
+    broken_date = datetime.datetime.now()
+    working_date = '2016-12-15T20:16:01'
+
+```
+
+Switch these around in the subsequent dict and re-run.
+
+### Provider debugging
+
 To manually trigger one of the 2 manual states you can run:
 
 ```bash
