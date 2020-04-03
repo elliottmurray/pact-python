@@ -47,10 +47,9 @@ def pact(request):
     finally:
         pact.stop_service()
 
-    # version = request.config.getoption('--publish-pact')
-    # if not request.node.testsfailed and version:
-    #     push_to_broker(version)
-
+    version = request.config.getoption('--publish-pact')
+    if not request.node.testsfailed and version:
+        push_to_broker(version)
 
 def push_to_broker(version):
     """

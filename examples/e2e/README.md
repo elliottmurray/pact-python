@@ -10,6 +10,17 @@ Create your own virtualenv for this. Run
 pip install -r requirements.txt
 ```
 
+Create the local broker (for demo purposes only) To do this separately clone this repo:
+* https://github.com/pact-foundation/pact-broker-docker
+
+Then from where this is install run in it's own terminal
+
+```bash
+docker-compose up
+```
+
+If you can open a browser to http://localhost and see the broker you have succeeded.
+
 ## Consumer
 
 From the root directory run:
