@@ -1,17 +1,13 @@
 import os
-import sys
 from unittest import TestCase
 
 from click.testing import CliRunner
 from mock import patch, Mock, call
 
-from pact import verify as verify
+from pact.cli import verify as verify
 from pact.constants import VERIFIER_PATH
 
-if sys.version_info.major == 2:
-    from subprocess32 import PIPE, Popen
-else:
-    from subprocess import PIPE, Popen
+from subprocess import PIPE, Popen
 
 
 class mainTestCase(TestCase):

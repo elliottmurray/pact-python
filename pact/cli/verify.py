@@ -4,12 +4,11 @@ import platform
 import sys
 from os import listdir
 from os.path import isfile, isdir, join
+import subprocess
 
 import click
 
-from .constants import VERIFIER_PATH
-
-import subprocess
+from ..constants import VERIFIER_PATH
 
 
 @click.command()
@@ -90,8 +89,7 @@ import subprocess
 @click.option(
     'provider_app_version', '-a', '--provider-app-version',
     help='The provider application version, '
-         'required for publishing verification results'
-    )
+         'required for publishing verification results')
 @click.option(
     'publish_verification_results', '-r', '--publish-verification-results',
     default=False,
@@ -132,14 +130,14 @@ def main(pacts, base_url, pact_url, pact_urls, states_url, states_setup_url,
         click.echo(
             warning
             + ' Multiple --pact-urls arguments are deprecated. '
-              'Please provide a comma separated list of pacts to --pact-urls, '
-              'or multiple --pact-url arguments.')
+            + 'Please provide a comma separated list of pacts to --pact-urls, '
+            + 'or multiple --pact-url arguments.')
 
     if not all_pact_urls and broker_not_provided(broker_base_url, provider):
         click.echo(
             error
             + ' You must supply at least one pact file or directory '
-            'to verify OR a Pact Broker and Provider.')
+            + 'to verify OR a Pact Broker and Provider.')
         raise click.Abort()
 
     all_pact_urls = expand_directories(all_pact_urls)
@@ -284,8 +282,7 @@ def sanitize_logs(process, verbose):
     """
     for line in process.stdout:
         if (not verbose and line.lstrip().startswith('#')
-            and ('vendor/ruby' in line
-                 or 'pact-provider-verifier.rb' in line)):
+           and ('vendor/ruby' in line or 'pact-provider-verifier.rb' in line)):
             continue
         else:
             sys.stdout.write(line)
