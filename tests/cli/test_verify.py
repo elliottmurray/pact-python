@@ -4,7 +4,7 @@ from unittest import TestCase
 from click.testing import CliRunner
 from mock import patch, Mock, call
 
-from pact.cli import verify as verify
+from pact.cli import verify
 from pact.constants import VERIFIER_PATH
 
 from subprocess import PIPE, Popen
@@ -81,7 +81,7 @@ class mainTestCase(TestCase):
         self.assertIn('at least one', result.output)
         self.assertFalse(self.mock_Popen.called)
 
-    def test_broker_url_and_provider_required(self):
+    def test_broker_url_but_no_provider_required(self):
         result = self.runner.invoke(
             verify.main, ['--provider-base-url=http://localhost',
                           '--pact-broker-url=http://broker'])
@@ -89,7 +89,7 @@ class mainTestCase(TestCase):
         self.assertFalse(self.mock_Popen.called)
         self.assertEqual(result.exit_code, 1)
 
-    def test_broker_url_and_provider_required1(self):
+    def test_broker_url_and_provider_required(self):
         self.mock_Popen.return_value.returncode = 0
         result = self.runner.invoke(
             verify.main, ['--provider-base-url=http://localhost',
@@ -204,6 +204,7 @@ class mainTestCase(TestCase):
             '--publish-verification-results',
             '--verbose'
         ])
+        print(result)
         self.assertEqual(result.exit_code, 0, result.output)
         self.mock_Popen.return_value.wait.assert_called_once_with()
         self.assertEqual(self.mock_Popen.call_count, 1)

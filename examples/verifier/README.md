@@ -1,14 +1,13 @@
 # Introduction
 
-This is an verifier example.
+This is a verifier example.
 
 ## Setup
 
 Create your own virtualenv for this. Run
 
 ```bash
-pip install pipenv
-pipenv install
+pip install -r requirements.txt
 ```
 
 This should provide you with a relative path to pact install relatively (2 dirs up)

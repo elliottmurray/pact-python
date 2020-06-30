@@ -61,11 +61,12 @@ def test_get_user_non_admin(provider):
 
     verifier = Verifier(provider='test',
                         pact_url=PACT_FILE,
-                        broker_username=pact_broker_username,
-                        pact_broker_password=pact_broker_password,
                         publish_verification_result=publish_verification_result,
-                        provider_version=providerVersion,
-                        pact_broker_url=pactBrokerUrl)
+                        provider_version=providerVersion)
 
-    output = verifier.verify_provider()
+    verifier.with_broker(broker_username=pact_broker_username,
+                         broker_password=pact_broker_password,
+                         broker_url=pactBrokerUrl)
+
+    output = verifier.verify_provider('url1', 'url2', provider_base_url='http://localhost:1234')
     assert(output == provider)
