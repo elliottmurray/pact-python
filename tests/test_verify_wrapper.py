@@ -110,22 +110,3 @@ class VerifyWrapperTestCase(TestCase):
         """todo
         """
         # todo
-
-    def test_missing_pact_files(self):
-        """todo
-        """
-        # todo
-
-    # def test_provider_base_url_is_required(self):
-    #     self.mock_Popen.return_value.returncode = 2
-    #     wrapper = VerifyWrapper()
-
-    #     result, output = wrapper.call_verify(provider_base_url='test')
-
-    #     self.assertEqual(result, 2)
-
-    #     # self.assertFalse(result)
-    #     args, _ = self.mock_Popen.call_args
-
-    #     self.assertIn('--provider-base-url=test', args[0])
-    #     self.assertTrue(self.mock_Popen.called)
