@@ -4,7 +4,7 @@ from unittest import TestCase
 from mock import patch
 
 from pact.constants import VERIFIER_PATH
-from pact.verify_wrapper import VerifyWrapper, PactException
+from pact.verify_wrapper import VerifyWrapper, PactException, path_exists
 from pact import verify_wrapper
 
 
@@ -67,6 +67,18 @@ class VerifyWrapperTestCase(TestCase):
         self.assertEqual(
             process_call[2]['env']['PACT_INTERACTION_RERUN_COMMAND'],
             self.mock_rerun_command.return_value)
+
+    def test_path_exists(self):
+        self.assertTrue(path_exists('README.md'))
+
+    def test_path_not_exists(self):
+        self.assertFalse(path_exists('not_a_real_file'))
+
+    def test_path_exists_valid_for_http(self):
+        self.assertTrue(path_exists('http://someurl'))
+
+    def test_path_exists_valid_for_https(self):
+        self.assertTrue(path_exists('https://someurl'))
 
     def test_pact_urls_provided(self):
         self.mock_Popen.return_value.returncode = 0

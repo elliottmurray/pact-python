@@ -1,7 +1,5 @@
 """Classes and methods to verify Contracts."""
-from os.path import isfile
-
-from pact.verify_wrapper import VerifyWrapper
+from pact.verify_wrapper import VerifyWrapper, path_exists
 
 class Verifier(object):
     """A Pact Verifier."""
@@ -34,7 +32,7 @@ class Verifier(object):
           logs: some tbd output of logs
 
         """
-        missing_files = [path for path in pacts if not self.path_exists(path)]
+        missing_files = [path for path in pacts if not path_exists(path)]
         print("!!!!!!")
         if missing_files:
             raise Exception("Missing pact files {}".format(missing_files))
@@ -59,22 +57,3 @@ class Verifier(object):
                                                     provider=self.provider,
                                                     provider_base_url=self.provider_base_url)
         return success, logs
-
-    def path_exists(self, path):
-        """
-        Determine if a particular path exists.
-
-        Can be provided a URL or local path. URLs always result in a True. Local
-        paths are True only if a file exists at that location.
-
-        :param path: The path to check.
-        :type path: str
-        :return: True if the path exists and is a file, otherwise False.
-        :rtype: bool
-        """
-        if path.startswith('http://') or path.startswith('https://'):
-            return True
-
-        print(path)
-        print(isfile(path))
-        return isfile(path)

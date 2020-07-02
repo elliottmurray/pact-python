@@ -34,9 +34,6 @@ class mainTestCase(TestCase):
 
         self.mock_Popen.return_value.communicate.return_value = self.locale
 
-        self.mock_isfile = patch.object(
-            verify, 'isfile', autospec=True).start()
-
         self.mock_rerun_command = patch.object(
             verify, 'rerun_command', autospec=True).start()
 
@@ -99,7 +96,8 @@ class mainTestCase(TestCase):
         self.assertTrue(self.mock_Popen.called)
         self.assertEqual(result.exit_code, 0)
 
-    def test_pact_urls_required(self):
+    @patch("pact.verify_wrapper.isfile", return_value=True)
+    def test_pact_urls_required(self, mock_isfile):
         self.mock_Popen.return_value.returncode = 0
         result = self.runner.invoke(
             verify.main, ['--provider-base-url=http://localhost',
@@ -108,21 +106,24 @@ class mainTestCase(TestCase):
         self.assertTrue(self.mock_Popen.called)
         self.assertEqual(result.exit_code, 0)
 
-    def test_local_pact_urls_must_exist(self):
-        self.mock_isfile.return_value = False
+    @patch("pact.verify_wrapper.isfile", return_value=False)
+    def test_local_pact_urls_must_exist(self, mock_isfile):
+        # self.mock_isfile.return_value = False
         result = self.runner.invoke(verify.main, self.default_opts)
         self.assertEqual(result.exit_code, 1)
         self.assertIn('./pacts/consumer-provider.json', result.output)
         self.assertFalse(self.mock_Popen.called)
 
-    def test_failed_verification(self):
+    @patch("pact.verify_wrapper.isfile", return_value=True)
+    def test_failed_verification(self, mock_isfile):
         self.mock_Popen.return_value.returncode = 3
         result = self.runner.invoke(verify.main, self.default_opts)
 
         self.assertEqual(result.exit_code, 3)
         self.assertProcess(*self.default_call)
 
-    def test_successful_verification(self):
+    @patch("pact.verify_wrapper.isfile", return_value=True)
+    def test_successful_verification(self, mock_isfile):
         self.mock_Popen.return_value.returncode = 0
         result = self.runner.invoke(verify.main, self.default_opts)
 
@@ -130,13 +131,15 @@ class mainTestCase(TestCase):
         self.assertProcess(*self.default_call)
 
     @patch.dict(os.environ, {'PACT_BROKER_PASSWORD': 'pwd'})
-    def test_password_from_env_var(self):
+    @patch("pact.verify_wrapper.isfile", return_value=True)
+    def test_password_from_env_var(self, mock_isfile):
         self.mock_Popen.return_value.returncode = 0
         result = self.runner.invoke(verify.main, self.default_opts)
         self.assertEqual(result.exit_code, 0)
         self.assertProcess(*self.default_call + ['--broker-password=pwd'])
 
-    def test_all_url_options(self):
+    @patch("pact.verify_wrapper.isfile", return_value=True)
+    def test_all_url_options(self, mock_isfile):
         self.mock_Popen.return_value.returncode = 0
         result = self.runner.invoke(verify.main, [
             './pacts/consumer-provider5.json',
@@ -224,7 +227,8 @@ class mainTestCase(TestCase):
             '--provider-app-version', '1.2.3',
             '--verbose')
 
-    def test_deprecated_pact_urls(self):
+    @patch("pact.verify_wrapper.isfile", return_value=True)
+    def test_deprecated_pact_urls(self, mock_isfile):
         self.mock_Popen.return_value.returncode = 0
         result = self.runner.invoke(verify.main, [
             '--provider-base-url=http://localhost',
@@ -242,7 +246,8 @@ class mainTestCase(TestCase):
             './pacts/consumer-provider2.json',
             '--provider-base-url=http://localhost')
 
-    def test_publishing_missing_version(self):
+    @patch("pact.verify_wrapper.isfile", return_value=True)
+    def test_publishing_missing_version(self, mock_isfile):
         result = self.runner.invoke(verify.main, [
             '--pact-urls=./pacts/consumer-provider.json',
             '--provider-base-url=http://localhost',
@@ -302,39 +307,6 @@ class expand_directoriesTestCase(TestCase):
             'C:/tmp/consumer-provider.json',
             'C:/tmp/consumer2-provider.json',
         ])
-
-
-class path_existsTestCase(TestCase):
-    def setUp(self):
-        super(path_existsTestCase, self).setUp()
-        self.addCleanup(patch.stopall)
-        self.mock_isfile = patch.object(
-            verify, 'isfile', autospec=True).start()
-
-    def test_http(self):
-        result = verify.path_exists('http://localhost')
-        self.assertIs(result, True)
-        self.assertFalse(self.mock_isfile.called)
-
-    def test_https(self):
-        result = verify.path_exists('https://example.com')
-        self.assertIs(result, True)
-        self.assertFalse(self.mock_isfile.called)
-
-    def test_file_does_exist(self):
-        self.mock_isfile.return_value = True
-        result = verify.path_exists('./pacts/consumer-provider.json')
-        self.assertIs(result, True)
-        self.mock_isfile.assert_called_once_with(
-            './pacts/consumer-provider.json')
-
-    def test_file_does_not_exist(self):
-        self.mock_isfile.return_value = False
-        result = verify.path_exists('./pacts/consumer-provider.json')
-        self.assertIs(result, False)
-        self.mock_isfile.assert_called_once_with(
-            './pacts/consumer-provider.json')
-
 
 class rerun_commandTestCase(TestCase):
     def setUp(self):

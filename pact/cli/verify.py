@@ -3,8 +3,9 @@ import os
 import platform
 import sys
 from os import listdir
-from os.path import isfile, isdir, join
+from os.path import isdir, join
 import subprocess
+from pact.verify_wrapper import path_exists
 
 import click
 
@@ -229,24 +230,6 @@ def expand_directories(paths):
 
     # Ruby pact verifier expects forward slashes regardless of OS
     return [p.replace('\\', '/') for p in paths_]
-
-
-def path_exists(path):
-    """
-    Determine if a particular path exists.
-
-    Can be provided a URL or local path. URLs always result in a True. Local
-    paths are True only if a file exists at that location.
-
-    :param path: The path to check.
-    :type path: str
-    :return: True if the path exists and is a file, otherwise False.
-    :rtype: bool
-    """
-    if path.startswith('http://') or path.startswith('https://'):
-        return True
-
-    return isfile(path)
 
 
 def rerun_command():

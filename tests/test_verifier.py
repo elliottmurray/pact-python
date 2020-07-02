@@ -17,8 +17,8 @@ class VerifierTestCase(TestCase):
         self.mock_wrapper = patch.object(
             VerifyWrapper, 'call_verify', spec=True).start()
 
-    @patch("pact.verifier.isfile", return_value=True)
-    def test_verifier_with_provider_and_files(self, blah):
+    @patch("pact.verify_wrapper.isfile", return_value=True)
+    def test_verifier_with_provider_and_files(self, mock_isfile):
         self.mock_wrapper.return_value = (True, 'some logs')
 
         output, _ = self.verifier.verify_pacts('path/to/pact1',

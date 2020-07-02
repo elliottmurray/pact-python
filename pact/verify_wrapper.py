@@ -6,8 +6,53 @@ import os
 import platform
 
 import subprocess
-from os.path import isdir, join
+from os.path import isdir, join, isfile
 from os import listdir
+
+def capture_logs(process, verbose):
+    """Capture logs from ruby process."""
+    result = ''
+    for line in process.stdout:
+        result = result + line + '\n'
+
+    return result
+
+
+def path_exists(path):
+    """
+    Determine if a particular path exists.
+
+    Can be provided a URL or local path. URLs always result in a True. Local
+    paths are True only if a file exists at that location.
+
+    :param path: The path to check.
+    :type path: str
+    :return: True if the path exists and is a file, otherwise False.
+    :rtype: bool
+    """
+    if path.startswith('http://') or path.startswith('https://'):
+        return True
+
+    print(path)
+    print(isfile(path))
+    return isfile(path)
+
+def sanitize_logs(self, process, verbose):
+    """
+    Print the logs from a process while removing Ruby stack traces.
+
+    :param process: The Ruby pact verifier process.
+    :type process: subprocess.Popen
+    :param verbose: Flag to toggle more verbose logging.
+    :type verbose: bool
+    :rtype: None
+    """
+    for line in process.stdout:
+        if (not verbose and line.lstrip().startswith('#')
+                and ('vendor/ruby' in line or 'pact-provider-verifier.rb' in line)):
+            continue
+        else:
+            sys.stdout.write(line)
 
 
 class PactException(Exception):
@@ -77,7 +122,7 @@ class VerifyWrapper(object):
                                   stderr=subprocess.STDOUT, universal_newlines=True)
 
         # self.sanitize_logs(result, verbose)
-        logs = self.capture_logs(result, verbose)
+        logs = capture_logs(result, verbose)
 
         result.wait()
         return result.returncode, logs
@@ -104,31 +149,6 @@ class VerifyWrapper(object):
 
         # Ruby pact verifier expects forward slashes regardless of OS
         return [p.replace('\\', '/') for p in paths_]
-
-    def capture_logs(self, process, verbose):
-        """Capture logs from ruby process."""
-        result = ''
-        for line in process.stdout:
-            result = result + line + '\n'
-
-        return result
-
-    def sanitize_logs(self, process, verbose):
-        """
-        Print the logs from a process while removing Ruby stack traces.
-
-        :param process: The Ruby pact verifier process.
-        :type process: subprocess.Popen
-        :param verbose: Flag to toggle more verbose logging.
-        :type verbose: bool
-        :rtype: None
-        """
-        for line in process.stdout:
-            if (not verbose and line.lstrip().startswith('#')
-                    and ('vendor/ruby' in line or 'pact-provider-verifier.rb' in line)):
-                continue
-            else:
-                sys.stdout.write(line)
 
     def rerun_command(self):
         """
