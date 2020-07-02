@@ -53,20 +53,17 @@ def provider():
 def test_get_user_non_admin(provider):
     print('verify our test')
 
-    pact_broker_username = "pactbroker",
-    pact_broker_password = "pactbroker"
-    publish_verification_result = True
-    providerVersion = "1.0.0"
-    pactBrokerUrl = "http://localhost"
+    # pact_broker_username = "pactbroker",
+    # pact_broker_password = "pactbroker"
+    # # publish_verification_result = True
+    # # providerVersion = "1.0.0"
+    # pactBrokerUrl = "http://localhost"
 
-    verifier = Verifier(provider='test',
-                        pact_url=PACT_FILE,
-                        publish_verification_result=publish_verification_result,
-                        provider_version=providerVersion)
+    verifier = Verifier(provider='UserService',
+                        provider_base_url='http://localhost:1234')
 
-    verifier.with_broker(broker_username=pact_broker_username,
-                         broker_password=pact_broker_password,
-                         broker_url=pactBrokerUrl)
+    output, logs = verifier.verify_pacts('./userserviceclient-userservice.json')
 
-    output = verifier.verify_provider('url1', 'url2', provider_base_url='http://localhost:1234')
-    assert(output == provider)
+    print(output)
+    print(logs)
+    assert (output == 0)

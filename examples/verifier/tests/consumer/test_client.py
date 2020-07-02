@@ -9,7 +9,7 @@ import pytest
 import requests
 from requests.auth import HTTPBasicAuth
 
-from app.client import UserClient
+from src.client import UserClient
 from pact import Consumer, Like, Provider, Term, Format
 
 log = logging.getLogger(__name__)

@@ -8,6 +8,15 @@ fakedb = {}
 app = Flask(__name__)
 
 
+@app.before_first_request
+def init_app():
+    print('init stuff')
+    setup_no_user_a()
+    setup_user_a_nonadmin()
+    # with open('userserviceclient-userservice.json') as json_file:
+    #     data = json.load(json_file)
+
+
 @app.route('/_pact/provider_states', methods=['POST'])
 def provider_states():
     mapping = {'UserA does not exist': setup_no_user_a,

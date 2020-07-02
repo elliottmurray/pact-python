@@ -30,12 +30,12 @@ class Verifier(object):
         """Verify our pacts from the provider.
 
         Returns:
-          [provider]: [tbd]
+          success: True if no failures
+          logs: some tbd output of logs
 
         """
         missing_files = [path for path in pacts if not self.path_exists(path)]
         print("!!!!!!")
-        print(missing_files)
         if missing_files:
             raise Exception("Missing pact files {}".format(missing_files))
 
