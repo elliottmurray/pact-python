@@ -139,7 +139,7 @@ if __name__ == '__main__':
             pact-verifier=pact.cli.verify:main
         ''',
         install_requires=dependencies,
-        packages=['pact'],
+        packages=['pact', 'pact.cli'],
         package_data={'pact': ['bin/*']},
         package_dir={'pact': 'pact'},
         license='MIT License')
